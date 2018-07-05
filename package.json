@@ -7,10 +7,13 @@
     "@material-ui/icons": "^1.1.0",
     "cesium": "^1.47.0",
     "cesium-react": "^0.2.1",
+    "material-ui-jsonschema-form": "^1.0.14",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-jsonschema-form": "^1.0.3",
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.4",
+    "react-swipeable-views": "^0.12.14",
     "redux": "^4.0.0",
     "webpack-config": "^7.5.0"
   },

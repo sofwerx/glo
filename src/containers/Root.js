@@ -1,43 +1,73 @@
-import React, { Component } from 'react';
-import {  connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import Button from '@material-ui/core/Button';
-import Drawer from '@material-ui/core/Drawer';
-import Menu from '../components/Menu';
-import Cesium from '../components/Globe';
+import { login, logout } from '../actions/authentication';
+
+import LoginForm from '../components/LoginForm';
+
+// import Drawer from '@material-ui/core/Drawer';
+// import Menu from '../components/Menu';
+// import Form from "material-ui-jsonschema-form";
+// import schema from '../components/Form';
+// import uiSchema from '../components/UISchema';
+// import Stepper from '../components/Stepper';
 
 class Root extends Component {
-    render() {
-        return(
-            <div>
-                    <Menu>
-                    </Menu>
-                    <Button variant="contained" color="primary" onClick={this.props.decrement}>-</Button>
-                    {this.props.counter}
-                    <Button variant="contained" color="secondary" onClick={this.props.increment}>+</Button>
-                    <Cesium>
-                    </Cesium>
-                
+//   state = {
+//     formData: {
+//       name: "",
+//       password: "",
+//       unit: "",
+//       location: "",
+//       optempo: ""
+//     }
+//   };
 
-            </div>
-        )
-    }
+//   onChange = ({ formData }) => {
+//     this.setState({ formData });
+//   };
+
+  render() {
+    return (
+      <div>
+        <LoginForm 
+        loggedIn={this.props.authenticated}
+        onSubmit={this.props.login}
+        onLogout={this.props.logout}/>
+        {/* <Menu />
+        <Stepper />
+        <Form
+          schema={schema}
+          onSubmit={onSubmit}
+          // uiSchema={uiSchema}
+          formData={this.state.formData}
+          onChange={this.onChange}
+        /> */}
+      </div>
+    );
+  }
 }
 
+const onSubmit = ({ formData }) => console.log("Data submitted: ", formData);
+
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({
-        increment: function () { return { type: 'INCREMENT' } },
-        decrement: function () { return { type: 'DECREMENT' } }
+  return bindActionCreators(
+    {
+      login,
+      logout
     },
-    dispatch);
+    dispatch
+  );
 }
 
 function mapStateToProps(state) {
-    return {
-        counter: state.counter
-    }
+  return {
+    authenticated: state.authentication.authenticated
+  };
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(Root);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Root);
