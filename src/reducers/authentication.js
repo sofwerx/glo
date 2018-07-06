@@ -1,4 +1,4 @@
-export default function(state = { authenticated: false, errorMsg: null }, action) {
+export default function(state = { authenticated: true, errorMsg: null }, action) {
   switch (action.type) {
     case "LOGIN":
       return { ...state, authenticated: true, errorMsg: null };
@@ -7,7 +7,6 @@ export default function(state = { authenticated: false, errorMsg: null }, action
     case "INVALID_LOGIN":
       return {...state, authenticated: false, errorMsg: "Incorrect username or password."}
     default:
-      console.debug(action)
       return state;
   }
 }

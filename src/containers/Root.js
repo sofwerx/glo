@@ -3,8 +3,10 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { login, logout } from "../actions/authentication";
+import { loadUnits } from "../actions/units";
 
 import LoginForm from "../components/LoginForm";
+import Units from "../components/Units";
 
 // import Drawer from '@material-ui/core/Drawer';
 // import Menu from '../components/Menu';
@@ -28,6 +30,10 @@ class Root extends Component {
   //     this.setState({ formData });
   //   };
 
+  componentDidMount() {
+    this.props.loadUnits();
+  }
+
   render() {
     return (
       <div>
@@ -37,6 +43,7 @@ class Root extends Component {
           onSubmit={this.props.login}
           onLogout={this.props.logout}
         />
+        <Units units={this.props.units} />
         {/* <Menu />
         <Stepper />
         <Form
@@ -57,7 +64,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       login,
-      logout
+      logout,
+      loadUnits
     },
     dispatch
   );
@@ -66,7 +74,8 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     authenticated: state.authentication.authenticated,
-    authenticationErrorMessage: state.authentication.errorMsg
+    authenticationErrorMessage: state.authentication.errorMsg,
+    units: state.units
   };
 }
 
