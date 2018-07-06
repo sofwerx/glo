@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { login, logout } from '../actions/authentication';
+import { login, logout } from "../actions/authentication";
 
-import LoginForm from '../components/LoginForm';
+import LoginForm from "../components/LoginForm";
 
 // import Drawer from '@material-ui/core/Drawer';
 // import Menu from '../components/Menu';
@@ -14,27 +14,29 @@ import LoginForm from '../components/LoginForm';
 // import Stepper from '../components/Stepper';
 
 class Root extends Component {
-//   state = {
-//     formData: {
-//       name: "",
-//       password: "",
-//       unit: "",
-//       location: "",
-//       optempo: ""
-//     }
-//   };
+  //   state = {
+  //     formData: {
+  //       name: "",
+  //       password: "",
+  //       unit: "",
+  //       location: "",
+  //       optempo: ""
+  //     }
+  //   };
 
-//   onChange = ({ formData }) => {
-//     this.setState({ formData });
-//   };
+  //   onChange = ({ formData }) => {
+  //     this.setState({ formData });
+  //   };
 
   render() {
     return (
       <div>
-        <LoginForm 
-        loggedIn={this.props.authenticated}
-        onSubmit={this.props.login}
-        onLogout={this.props.logout}/>
+        {this.props.authenticationErrorMessage}
+        <LoginForm
+          loggedIn={this.props.authenticated}
+          onSubmit={this.props.login}
+          onLogout={this.props.logout}
+        />
         {/* <Menu />
         <Stepper />
         <Form
@@ -63,7 +65,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    authenticated: state.authentication.authenticated
+    authenticated: state.authentication.authenticated,
+    authenticationErrorMessage: state.authentication.errorMsg
   };
 }
 
