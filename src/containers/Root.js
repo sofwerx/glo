@@ -67,6 +67,7 @@ class Root extends Component {
             <Tab label="Deployments" />
             <Tab label="Select Resources" />
             <Tab label="Select Location" />
+            <Tab label="Review Recommended Rations" />
           </Tabs>
         </AppBar>
         <Grid item lg={6}>
@@ -121,8 +122,14 @@ class Root extends Component {
                 onChange={this.onChange("location")}
               />
               <br />
-              <DateRange />
+              <DateRange
+                onChangeStartDate={this.onChange("startDate")}
+                onChangeEndDate={this.onChange("endDate")} 
+              />
               <Button onClick={this.props.previousStep}> Previous </Button>
+              <Button onClick={this.props.nextStep}> Review </Button>
+            </React.Fragment>
+            <React.Fragment>
               <Button onClick={this.onSave}> Save Deployment </Button>
             </React.Fragment>
           </SwipeableViews>

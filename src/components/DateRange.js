@@ -2,10 +2,31 @@ import React, { Component } from "react";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+import { withStyles } from '@material-ui/core/styles';
 
 import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
 
-export default class DateRange extends Component {
+
+const styles = theme => ({
+  root: {
+    display: "flex",
+    flexWrap: "wrap"
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: "60%"
+  },
+  selectEmpty: {
+    marginTop: theme.spacing.unit * 2
+  }
+});
+
+
+
+
+
+class DateRange extends Component {
   state = {
     startDate: '',
     endDate: ''
@@ -17,25 +38,49 @@ export default class DateRange extends Component {
     this.setState(newState);
   };
 
+  changeStartDate = (ev) => {
+    this.changeDate('startDate')(ev);
+    if(this.props.onChangeStartDate) {
+      this.props.onChangeStartDate(ev.target.value);
+    }
+  }
+
+  changeEndDate = (ev) => {
+    this.changeDate('endDate')(ev);
+    if (this.props.onChangeEndDate) {
+      this.props.onChangeEndDate(ev.target.value);
+    }
+  }
+
   render() {
+    const { classes } = this.props;
+
     return (
-      <React.Fragment>
-        <FormControl>
+      <div className={classes.root}>
+        <FormControl className={classes.formControl} >
           <TextField
-            id="startDate"
             label="Start Date"
+            id="startDate"
             type="date"
+            className={classes.textField}
             value={this.state.startDate}
-            onChange={this.changeDate('startDate')}
-            InputLabelProps={{
-              shrink: true
-            }}
+            onChange={this.changeStartDate}
           />
         </FormControl>
-        <FormControl>
-          {/* <InputLabel htmlFor="endDate">Start Date</InputLabel> */}
+        <FormControl className={classes.formControl} >
+          <TextField
+            label="End Date"
+            id="endDate"
+            type="date"
+            className={classes.textField}
+            value={this.state.endDate}
+            onChange={this.changeEndDate}
+          />
         </FormControl>
-      </React.Fragment>
+      </div>
     );
   }
 }
+
+export default withStyles(styles)(DateRange);
+
