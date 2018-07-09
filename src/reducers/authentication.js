@@ -1,4 +1,4 @@
-export default function(state = { authenticated: true, errorMsg: null }, action) {
+export default function(state = { authenticated: false, errorMsg: null }, action) {
   switch (action.type) {
     case "LOGIN":
       return { ...state, authenticated: true, errorMsg: null };

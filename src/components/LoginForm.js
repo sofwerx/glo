@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 
 const LOGIN_FORM_SCHEMA = {
   title: "Login",
+  classNames: 'logwerx-form',
   type: "object",
   required: ["username, password"],
   properties: {
@@ -42,6 +43,7 @@ export default class LoginForm extends Component {
     }
     return (
       <Form
+      style={{border: 'none'}}
         schema={LOGIN_FORM_SCHEMA}
         formData={this.state}
         onChange={this.onChange}

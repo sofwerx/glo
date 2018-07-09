@@ -14,7 +14,7 @@ const styles = theme => ({
   },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: '60%'
+    minWidth: "60%"
   },
   selectEmpty: {
     marginTop: theme.spacing.unit * 2
@@ -22,11 +22,18 @@ const styles = theme => ({
 });
 
 class Picker extends Component {
-  state = {
-    value: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: props.multiple ? [] : ""
+    };
+  }
 
   changeValue = ev => {
+    if (this.props.onChange) {
+
+      this.props.onChange(ev.target.value);
+    }
     this.setState({ value: ev.target.value });
   };
 
@@ -39,7 +46,11 @@ class Picker extends Component {
       <div className={classes.root}>
         <FormControl className={classes.formControl}>
           <InputLabel>Select {this.props.name}</InputLabel>
-          <Select value={this.state.value} onChange={this.changeValue}>
+          <Select
+            multiple={this.props.multiple}
+            value={this.state.value}
+            onChange={this.changeValue}
+          >
             {this.props.values.map((value, i) => (
               <MenuItem key={i} name={value.name} value={value.name}>
                 {value.name}
@@ -52,4 +63,4 @@ class Picker extends Component {
   }
 }
 
-export default withStyles(styles)(Units);
+export default withStyles(styles)(Picker);

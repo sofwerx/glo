@@ -10,13 +10,17 @@ function submitActionCreator(url) {
       const response = await fetch(url, options);
       const data = await response.json();
       onSuccess(data);
-    } catch (err){
+    } catch (err) {
       onError();
     }
   };
 }
 
 export function login({ formData }) {
+  return {
+    type: "LOGIN",
+    data: formData
+  };
   return submitActionCreator("/auth")(
     formData,
     () => {

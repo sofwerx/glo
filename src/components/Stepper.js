@@ -1,16 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import SwipeableViews from 'react-swipeable-views';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import purple from '@material-ui/core/colors/purple';
-import Form from './Form';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import SwipeableViews from "react-swipeable-views";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+import purple from "@material-ui/core/colors/purple";
 
-const primary = purple['A200']
-
+const primary = purple["A200"];
 
 function TabContainer({ children, dir }) {
   return (
@@ -22,19 +20,19 @@ function TabContainer({ children, dir }) {
 
 TabContainer.propTypes = {
   children: PropTypes.node.isRequired,
-  dir: PropTypes.string.isRequired,
+  dir: PropTypes.string.isRequired
 };
 
-const styles = theme => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    width: 500,
-  },
-});
+// const styles = theme => ({
+//   root: {
+//     backgroundColor: theme.palette.background.paper,
+//     width: 500,
+//   },
+// });
 
 class FullWidthTabs extends React.Component {
   state = {
-    value: 0,
+    value: 0
   };
 
   handleChange = (event, value) => {
@@ -46,40 +44,35 @@ class FullWidthTabs extends React.Component {
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { children, classes, theme } = this.props;
 
     return (
-      <div className={classes.root}>
-        <AppBar position="static" color="primary">
-          <Tabs
-            value={this.state.value}
-            onChange={this.handleChange}
-            indicatorColor="default"
-            textColor="default"
-            fullWidth
-          >
+      <div>
+        <AppBar position="static" color="default">
+          <Tabs value={this.state.value} onChange={this.handleChange}>
             <Tab label="Login" />
             <Tab label="Item Two" />
             <Tab label="Item Three" />
           </Tabs>
         </AppBar>
+        
         <SwipeableViews
-          axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+          axis={"x"}
           index={this.state.value}
           onChangeIndex={this.handleChangeIndex}
         >
-          <TabContainer dir={theme.direction}> <Form/>  </TabContainer>
-          <TabContainer dir={theme.direction}>Item Two</TabContainer>
-          <TabContainer dir={theme.direction}>Item Three</TabContainer>
+          {React.Children.map(children, (child, i) => {
+            <TabContainer dir="ltr" key={i}>
+              {child}
+            </TabContainer>;
+          })}
+          <TabContainer dir="ltr" key={-1}>
+            Test
+          </TabContainer>;
         </SwipeableViews>
       </div>
     );
   }
 }
 
-FullWidthTabs.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles, { withTheme: true })(FullWidthTabs);
+export default FullWidthTabs;
