@@ -27,6 +27,7 @@ import LoginForm from "../components/LoginForm";
 import Picker from "../components/Picker";
 import Location from "../components/Location";
 import DateRange from "../components/DateRange";
+import Globe from '../components/Globe';
 
 // import Drawer from '@material-ui/core/Drawer';
 // import Menu from '../components/Menu';
@@ -70,7 +71,7 @@ class Root extends Component {
             <Tab label="Review Recommended Rations" />
           </Tabs>
         </AppBar>
-        <Grid item lg={6}>
+        <Grid item md={6} lg={6}>
           {this.props.authenticationErrorMessage}
           <SwipeableViews axis={"x"} index={this.props.step}>
             <LoginForm
@@ -124,7 +125,7 @@ class Root extends Component {
               <br />
               <DateRange
                 onChangeStartDate={this.onChange("startDate")}
-                onChangeEndDate={this.onChange("endDate")} 
+                onChangeEndDate={this.onChange("endDate")}
               />
               <Button onClick={this.props.previousStep}> Previous </Button>
               <Button onClick={this.props.nextStep}> Review </Button>
@@ -135,7 +136,9 @@ class Root extends Component {
           </SwipeableViews>
         </Grid>
         <Grid item lg={"auto"}>
-          Cesium Globe Goes Here
+          <div>
+            <Globe onClick={this.onChange("location")}/>
+          </div>
         </Grid>
       </Grid>
     );

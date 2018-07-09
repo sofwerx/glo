@@ -1,20 +1,48 @@
 import React from 'react';
-import { Cartesian3 } from 'cesium';
-import { Viewer, Entity } from 'cesium-react';
+import DeckGL, { LineLayer } from 'deck.gl';
+import ReactMapGL from 'react-map-gl';
 
-export default class Cesium extends React.PureComponent {
- 
-    render() {
-      return (
-        <Viewer full>
-          <Entity
-            name="tokyo"
-            position={Cartesian3.fromDegrees(139.767052, 35.681167, 100)}
-            point={{ pixelSize: 10 }}>
-            test
-          </Entity>
-        </Viewer>
-      );
+import './Globe.css';
+
+const data = [{ sourcePosition: [-122.41669, 37.7853], targetPosition: [-122.41669, 37.781] }];
+
+const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+
+export default class Globe extends React.PureComponent {
+  state = {
+    viewport: {
+      width: 500,
+      height: 500,
+      longitude: -82.50621705971729, 
+      latitude: 28.010091178382265,
+      zoom: 6,
+      pitch: 0,
+      bearing: 0,
     }
-   
   }
+  render() {
+    return (
+      <div>
+        <ReactMapGL
+          mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+          {...this.state.viewport}
+          onViewportChange={(viewport) => {
+            this.setState({viewport})
+            // Optionally call `setState` and use the state to update the map.
+          }}
+          onClick={({lngLat}) => {
+            if(this.props.onClick){
+              this.props.onClick(lngLat);
+            }
+          }}
+        >
+          <DeckGL className={'deck-gl'} {...this.state.viewport} >
+            <LineLayer id='layer1' data={data} getColor={() => [255, 0 , 0]} getStrokeWidth={12} />
+          </DeckGL>
+        </ReactMapGL>
+      </div>
+    );
+
+  }
+
+}

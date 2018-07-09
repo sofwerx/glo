@@ -23,3 +23,7 @@ yarn-error.log*
 # production
 /build
 /public/cesium/
+
+# Don't commit our environment variables
+.env
+/.vs
