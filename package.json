@@ -13,6 +13,7 @@
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-jsonschema-form": "^1.0.3",
+    "react-map-gl": "^3.3.0",
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.4",
     "react-swipeable-views": "^0.12.14",
