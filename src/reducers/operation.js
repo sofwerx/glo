@@ -18,9 +18,9 @@ export default function(state = defaultState, action) {
     case "PREVIOUS_STEP":
       return { ...state, step: state.step - 1 };
     case "SELECT_DEPLOYMENT":
-      return { ...state, currentDeploymentIndex: action.data, step: 2 };
+      return { ...state, currentDeploymentIndex: action.data, step: 1 };
     case "ADD_DEPLOYMENT":
-      const newDeploymentState = { ...state, step: 2, currentDeploymentIndex: state.currentDeploymentIndex + 1 };
+      const newDeploymentState = { ...state, step: 1, currentDeploymentIndex: state.currentDeploymentIndex + 1 };
       newDeploymentState.deployments.push({});
       return newDeploymentState;
     case "UPDATE_DEPLOYMENT":

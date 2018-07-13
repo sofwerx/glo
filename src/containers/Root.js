@@ -11,10 +11,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Paper from '@material-ui/core/Paper';
 import Drawer from '@material-ui/core/Drawer';
 import Modal from '@material-ui/core/Modal';
-
-
-
-
+import Typography from '@material-ui/core/Typography';
 
 import { login, logout } from "../actions/authentication";
 import { loadUnits } from "../actions/units";
@@ -36,6 +33,7 @@ import Location from "../components/Location";
 import DateRange from "../components/DateRange";
 import Globe from '../components/Globe';
 import BottomNav from '../components/BottomNav';
+import Review from '../components/Review';
 
 class Root extends Component {
   state = {
@@ -46,7 +44,7 @@ class Root extends Component {
   };
 
   openNotifs = () => {
-    this.setState({notifsOpen: true});
+    this.setState({ notifsOpen: true });
   }
 
   closeNotifs = () => {
@@ -65,11 +63,11 @@ class Root extends Component {
 
   selectUnit = (unit) => {
     console.log(unit)
-    this.setState({unit})
+    this.setState({ unit })
   }
 
   addDeployment = (location) => {
-    this.setState({currentDeployment: {location}, editorPanelOpen: true});
+    this.setState({ currentDeployment: { location }, editorPanelOpen: true });
   }
 
   componentDidMount() {
@@ -90,9 +88,9 @@ class Root extends Component {
     return (
       <div>
         <div>
-          <Globe onClick={this.addDeployment} />
+          <Globe deployments={this.props.deployments} onClick={this.addDeployment} />
         </div>
-        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout}/>
+        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout} />
         <Modal open={!this.props.authenticated}>
           <LoginForm
             loggedIn={this.props.authenticated}
@@ -102,22 +100,25 @@ class Root extends Component {
         </Modal>
 
         <Modal open={this.props.authenticated && this.props.unit === null}>
-            <Paper>
+          <Paper>
             <Picker
               values={this.props.units}
               name="Units"
               onChange={this.selectUnit}
             />
-            <Button onClick={() => this.props.selectUnit(this.state.unit)}> Confirm </Button> 
-              </Paper>
+            <Button onClick={() => this.props.selectUnit(this.state.unit)}> Confirm </Button>
+          </Paper>
         </Modal>
 
         <Drawer anchor='right' open={this.state.notifsOpen} onClose={this.closeNotifs}>
-          Notifs
+          <div style={{ width: '40em' }}> 
+            <Typography>Notifications</Typography>
+          </div>
+          
         </Drawer>
 
         <Drawer open={this.state.editorPanelOpen} onClose={this.closeEditorPanel}>
-          <div style={{width: '40em'}}>
+          <div style={{ width: '40em' }}>
 
             <SwipeableViews axis={"x"} index={this.props.step}>
               <React.Fragment>
@@ -163,6 +164,8 @@ class Root extends Component {
                 <Button onClick={this.props.nextStep}> Review </Button>
               </React.Fragment>
               <React.Fragment>
+                <Typography>Review</Typography>
+                <Review {...this.state.currentDeployment} />
                 <Button onClick={this.onSave}> Save Deployment </Button>
               </React.Fragment>
             </SwipeableViews>
