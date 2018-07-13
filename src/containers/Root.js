@@ -10,6 +10,8 @@ import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
 import Paper from '@material-ui/core/Paper';
 import Drawer from '@material-ui/core/Drawer';
+import Modal from '@material-ui/core/Modal';
+
 
 
 
@@ -33,20 +35,23 @@ import Picker from "../components/Picker";
 import Location from "../components/Location";
 import DateRange from "../components/DateRange";
 import Globe from '../components/Globe';
-import Menu from '../components/Menu';
-
-// import Drawer from '@material-ui/core/Drawer';
-// import Menu from '../components/Menu';
-// import Form from "material-ui-jsonschema-form";
-// import schema from '../components/Form';
-// import uiSchema from '../components/UISchema';
-// import Stepper from '../components/Stepper';
+import BottomNav from '../components/BottomNav';
 
 class Root extends Component {
   state = {
     currentDeployment: {},
-    editorPanelOpen: false
+    editorPanelOpen: false,
+    unit: null,
+    notifsOpen: false
   };
+
+  openNotifs = () => {
+    this.setState({notifsOpen: true});
+  }
+
+  closeNotifs = () => {
+    this.setState({ notifsOpen: false });
+  }
 
   onSave = () => {
     this.props.updateDeployment(this.state.currentDeployment);
@@ -57,6 +62,15 @@ class Root extends Component {
     newState.currentDeployment[key] = val;
     this.setState(newState);
   };
+
+  selectUnit = (unit) => {
+    console.log(unit)
+    this.setState({unit})
+  }
+
+  addDeployment = (location) => {
+    this.setState({currentDeployment: {location}, editorPanelOpen: true});
+  }
 
   componentDidMount() {
     this.props.loadUnits();
@@ -75,28 +89,37 @@ class Root extends Component {
   render() {
     return (
       <div>
-        <AppBar position="static" color="default">
-          <Button onClick={this.openEditorPanel}>Start</Button>
-        </AppBar>
         <div>
-          <Globe onClick={this.onChange("location")} />
+          <Globe onClick={this.addDeployment} />
         </div>
+        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout}/>
+        <Modal open={!this.props.authenticated}>
+          <LoginForm
+            loggedIn={this.props.authenticated}
+            onSubmit={this.props.login}
+            onLogout={this.props.logout}
+          />
+        </Modal>
+
+        <Modal open={this.props.authenticated && this.props.unit === null}>
+            <Paper>
+            <Picker
+              values={this.props.units}
+              name="Units"
+              onChange={this.selectUnit}
+            />
+            <Button onClick={() => this.props.selectUnit(this.state.unit)}> Confirm </Button> 
+              </Paper>
+        </Modal>
+
+        <Drawer anchor='right' open={this.state.notifsOpen} onClose={this.closeNotifs}>
+          Notifs
+        </Drawer>
+
         <Drawer open={this.state.editorPanelOpen} onClose={this.closeEditorPanel}>
           <div style={{width: '40em'}}>
+
             <SwipeableViews axis={"x"} index={this.props.step}>
-              <LoginForm
-                loggedIn={this.props.authenticated}
-                onSubmit={this.props.login}
-                onLogout={this.props.logout}
-              />
-              <React.Fragment>
-                <Picker
-                  values={this.props.units}
-                  name="Units"
-                  onChange={this.props.selectUnit}
-                />
-                <Button onClick={this.props.nextStep}> Next </Button>
-              </React.Fragment>
               <React.Fragment>
                 <ul>
                   {this.props.deployments.map((d, i) => (
@@ -127,16 +150,15 @@ class Root extends Component {
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
               <React.Fragment>
-                <Picker
-                  name="Location"
-                  values={this.props.location}
-                  onChange={this.onChange("location")}
-                />
-                <br />
                 <DateRange
                   onChangeStartDate={this.onChange("startDate")}
                   onChangeEndDate={this.onChange("endDate")}
                 />
+                <Button onClick={this.props.previousStep}> Previous </Button>
+                <Button onClick={this.props.nextStep}> Next </Button>
+              </React.Fragment>
+              <React.Fragment>
+                NOAA Weather Report
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Review </Button>
               </React.Fragment>
@@ -182,7 +204,8 @@ function mapStateToProps(state) {
     equipment: state.equipment,
     people: state.people,
     location: state.location,
-    deployments: state.operation.deployments
+    deployments: state.operation.deployments,
+    unit: state.operation.unit
   };
 }
 

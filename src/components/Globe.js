@@ -15,14 +15,14 @@ export default class Globe extends React.PureComponent {
       width: 100,
       longitude: -82.50621705971729, 
       latitude: 28.010091178382265,
-      zoom: 6,
+      zoom: 1,
       pitch: 0,
       bearing: 0,
     }
   }
 
   resize = () => {
-    const viewport = {...this.state.viewport, height: window.innerHeight, width: window.innerWidth};
+    const viewport = {...this.state.viewport, height: window.innerHeight - 56, width: window.innerWidth};
     this.setState({viewport})
     console.log('updating...')
   }
