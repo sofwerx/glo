@@ -6,6 +6,7 @@ import operation from './operation';
 import equipment from './equipment';
 import people from './people';
 import location from './location';
+import OPtempo from './OPtempo';
 
 export default combineReducers({
   counter,
@@ -14,5 +15,6 @@ export default combineReducers({
   people,
   equipment,
   operation,
-  location
+  location,
+  OPtempo
 });

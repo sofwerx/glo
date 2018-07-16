@@ -13,6 +13,8 @@ import Drawer from '@material-ui/core/Drawer';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
 
+
+import { loadOPtempo } from "../actions/OPtempo";
 import { login, logout } from "../actions/authentication";
 import { loadUnits } from "../actions/units";
 import { loadPeople } from "../actions/people";
@@ -24,9 +26,10 @@ import {
   addDeployment,
   updateDeployment,
   selectDeployment,
-  selectUnit
+  selectUnit,
 } from "../actions/operation";
 
+import OPtempo from "../components/OPtempo";
 import LoginForm from "../components/LoginForm";
 import Picker from "../components/Picker";
 import Location from "../components/Location";
@@ -62,7 +65,6 @@ class Root extends Component {
   };
 
   selectUnit = (unit) => {
-    console.log(unit)
     this.setState({ unit })
   }
 
@@ -71,10 +73,11 @@ class Root extends Component {
   }
 
   componentDidMount() {
-    this.props.loadUnits();
-    this.props.loadPeople();
-    this.props.loadEquipment();
-    this.props.loadLocation();
+    // this.props.loadUnits();
+    // this.props.loadPeople();
+    // this.props.loadEquipment();
+    // this.props.loadLocation();
+    this.props.loadOPtempo();
   }
 
   openEditorPanel = () => {
@@ -106,7 +109,7 @@ class Root extends Component {
               name="Units"
               onChange={this.selectUnit}
             />
-            <Button onClick={() => this.props.selectUnit(this.state.unit)}> Confirm </Button>
+            <Button onClick={() => this.props.selectUnit(this.state.unit, this.props.authToken)}> Confirm </Button>
           </Paper>
         </Modal>
 
@@ -161,6 +164,15 @@ class Root extends Component {
               <React.Fragment>
                 NOAA Weather Report
                 <Button onClick={this.props.previousStep}> Previous </Button>
+                <Button onClick={this.props.nextStep}> Next </Button>
+              </React.Fragment>
+              <React.Fragment>
+                <Picker
+                name="OP Tempo"
+                values={this.props.OPtempo}
+                onChange={this.onChange("OPtempo")}
+                />
+                <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Review </Button>
               </React.Fragment>
               <React.Fragment>
@@ -192,7 +204,8 @@ function mapDispatchToProps(dispatch) {
       selectUnit,
       addDeployment,
       updateDeployment,
-      selectDeployment
+      selectDeployment,
+      loadOPtempo
     },
     dispatch
   );
@@ -208,7 +221,8 @@ function mapStateToProps(state) {
     people: state.people,
     location: state.location,
     deployments: state.operation.deployments,
-    unit: state.operation.unit
+    unit: state.operation.unit,
+    OPtempo: state.OPtempo
   };
 }
 

@@ -1,11 +1,26 @@
-// import fetch from 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 
-import PEOPLE from '../data/people';
+export function loadPeople(AuthToken, UIC) {
+  return async dispatch => {
+    try {
+      const options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({AuthToken, UIC}),
 
-
-export function loadPeople() {
-  return {
-    type: "PEOPLE_LOADED",
-    data: PEOPLE
-  };
+      };
+      const response = await fetch('/ForceMgmtService/GetUnitPAX', options);
+      const data = await response.json();
+      const { requestOK, PAXList } = data;
+      if (requestOK) {
+        dispatch({ type: 'PEOPLE_LOADED', data: PAXList });
+      }
+      // onSuccess(data);
+    } catch (err) {
+      // onError();
+    }
+  }
 }

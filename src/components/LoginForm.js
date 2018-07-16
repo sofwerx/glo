@@ -21,8 +21,8 @@ const LOGIN_FORM_SCHEMA = {
 
 export default class LoginForm extends Component {
   state = {
-    username: "myUserName",
-    password: "myPassword"
+    username: "foo",
+    password: "bar"
   };
 
   onChange = ({ formData }) => {

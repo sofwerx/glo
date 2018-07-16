@@ -1,11 +1,36 @@
-What happens when you change the unit you've selected, should any existing deployments get removed? 
+Equipment: 
 
-What information do you have for People and Equipment? 
+Do you want it grouped by "category"?
 
-How do you want to identify Deployments? Currently by Location which won't work for lat/lon locations. 
+Do you want to be able to bring a certain number of them or is it all or nothing? 
 
-What does the "suggested resources" data look like, what level of modification do you want on it? 
+If so, is a series of checkboxes ok? Would this approach work for People too? 
 
-Op Tempo?
+People: 
 
-Cesium is sub par for UX, would a 2d map with sat views (google maps style) be acceptable given it work more effectively for users? 
+Do you want to generate a row for each in the qty? ie: 
+    ```
+    {
+    qty: 2,
+    branch: 'AR',
+    rank: 'officer',
+    duty: 'active',
+    gender: 'F'
+  }
+  ```
+
+  would expand to: 
+```
+  [
+      { branch: 'AR', rank: 'officer', duty: 'active', name: 'F_1'},
+      { branch: 'AR', rank: 'officer', duty: 'active', name: 'F_2'}
+  ]
+```
+  (F1/F2 here being generated names based on gender)
+
+
+glo-services.vmhost.devwerx.org/WeatherService/GetClimate
+
+Doesn't seem to work
+
+what's the difference between it and glo-services.vmhost.devwerx.org/WeatherService/GetWeatherRpt
