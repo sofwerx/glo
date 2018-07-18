@@ -12,6 +12,7 @@ import Paper from '@material-ui/core/Paper';
 import Drawer from '@material-ui/core/Drawer';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
+import _ from 'lodash';
 
 
 import { loadOPtempo } from "../actions/OPtempo";
@@ -37,13 +38,14 @@ import DateRange from "../components/DateRange";
 import Globe from '../components/Globe';
 import BottomNav from '../components/BottomNav';
 import Review from '../components/Review';
+import SelectTable from '../components/SelectTable';
 
 class Root extends Component {
   state = {
     currentDeployment: {},
     editorPanelOpen: false,
     unit: null,
-    notifsOpen: false
+    notifsOpen: false,
   };
 
   openNotifs = () => {
@@ -60,16 +62,21 @@ class Root extends Component {
 
   onChange = key => val => {
     const newState = { ...this.state };
-    newState.currentDeployment[key] = val;
+    newState.currentDeployment[key] = val;   
+    _.set(newState, `currentDeployment.${key}`, val);
     this.setState(newState);
   };
+
+  onChangeIndex = key => index => val =>  {
+    this.onChange(`${key}.${index}`)(val);
+  }
 
   selectUnit = (unit) => {
     this.setState({ unit })
   }
 
   addDeployment = (location) => {
-    this.setState({ currentDeployment: { location }, editorPanelOpen: true });
+    this.setState({ currentDeployment: { location , people: [...this.props.people], equipment: [...this.props.equipment]}, editorPanelOpen: true });
   }
 
   componentDidMount() {
@@ -79,6 +86,10 @@ class Root extends Component {
     // this.props.loadLocation();
     this.props.loadOPtempo();
   }
+
+  // componentWillReceiveProps(nextProps) {
+
+  // }
 
   openEditorPanel = () => {
     this.setState({ editorPanelOpen: true });
@@ -114,10 +125,10 @@ class Root extends Component {
         </Modal>
 
         <Drawer anchor='right' open={this.state.notifsOpen} onClose={this.closeNotifs}>
-          <div style={{ width: '40em' }}> 
+          <div style={{ width: '40em' }}>
             <Typography>Notifications</Typography>
           </div>
-          
+
         </Drawer>
 
         <Drawer open={this.state.editorPanelOpen} onClose={this.closeEditorPanel}>
@@ -137,19 +148,12 @@ class Root extends Component {
                 <Button onClick={this.props.addDeployment}>Add Deployment</Button>
               </React.Fragment>
               <React.Fragment>
-                <Picker
-                  multiple
-                  name="People"
-                  values={this.props.people}
-                  onChange={this.onChange("people")}
-                />
-                <br />
-                <Picker
-                  multiple
-                  name="Equipment"
-                  values={this.props.equipment}
-                  onChange={this.onChange("equipment")}
-                />
+                <SelectTable data={this.state.currentDeployment.people} editableColumns={['qty']} onChange={this.onChangeIndex('people')} />
+                <Button onClick={this.props.previousStep}> Previous </Button>
+                <Button onClick={this.props.nextStep}> Next </Button>
+              </React.Fragment>
+              <React.Fragment>
+                <SelectTable data={this.state.currentDeployment.equipment} editableColumns={['qty-onhand']} onChange={this.onChangeIndex('equipment')} />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
@@ -168,9 +172,9 @@ class Root extends Component {
               </React.Fragment>
               <React.Fragment>
                 <Picker
-                name="OP Tempo"
-                values={this.props.OPtempo}
-                onChange={this.onChange("OPtempo")}
+                  name="OP Tempo"
+                  values={this.props.OPtempo}
+                  onChange={this.onChange("OPtempo")}
                 />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Review </Button>
