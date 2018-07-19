@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
 export default class Review extends React.Component {
+    
+    
     render() {
         const { location, people, equipment, startDate, endDate } = this.props;
 

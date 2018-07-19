@@ -12,7 +12,7 @@ export function previousStep() {
     }
 }
 
-export function addDeployment() {
+export function addDeployment(location) {
     return {
         type: 'ADD_DEPLOYMENT'
     }

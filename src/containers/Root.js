@@ -33,7 +33,6 @@ import {
 import OPtempo from "../components/OPtempo";
 import LoginForm from "../components/LoginForm";
 import Picker from "../components/Picker";
-import Location from "../components/Location";
 import DateRange from "../components/DateRange";
 import Globe from '../components/Globe';
 import BottomNav from '../components/BottomNav';
@@ -46,7 +45,60 @@ class Root extends Component {
     editorPanelOpen: false,
     unit: null,
     notifsOpen: false,
+    climate: {},
+    weather: {}
   };
+
+  loadClimate = async (location, authToken) => {
+    try {
+      const options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ AuthToken: authToken, location: { lat: location[1], lon: location[0] } }),
+
+      };
+      const response = await fetch('/WeatherService/GetClimate', options);
+      const { ClimateTemp, ClimateHumidity } = await response.json();
+      const climate = { ClimateTemp, ClimateHumidity };
+      this.setState({ climate })
+
+
+
+      // const responseEquipment = await fetch('/ForceMgmtService/GetUnitTOE', options);
+      // const dataEquipment = await responseEquipment.json();
+      // if (dataEquipment.requestOK) {
+      //     dispatch({ type: 'EQUIPMENT_LOADED', data: dataEquipment.EqipList });
+      // }
+    } catch (err) {
+    }
+  }
+
+  loadWeather = async (location, startDate, endDate, authToken) => {
+    try {
+      const options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({
+          AuthToken: authToken,
+          location: { lat: location[1], lon: location[0] },
+          startDate,
+          endDate
+        }),
+
+      };
+      const response = await fetch('/WeatherService/GetWeatherRpt', options);
+      const { AvgTemp, AvgHumidity, Precipitation } = await response.json();
+      const weather = { AvgTemp, AvgHumidity, Precipitation };
+      this.setState({ weather })
+    } catch (err) {
+    }
+  }
 
   openNotifs = () => {
     this.setState({ notifsOpen: true });
@@ -62,12 +114,12 @@ class Root extends Component {
 
   onChange = key => val => {
     const newState = { ...this.state };
-    newState.currentDeployment[key] = val;   
+    newState.currentDeployment[key] = val;
     _.set(newState, `currentDeployment.${key}`, val);
     this.setState(newState);
   };
 
-  onChangeIndex = key => index => val =>  {
+  onChangeIndex = key => index => val => {
     this.onChange(`${key}.${index}`)(val);
   }
 
@@ -76,14 +128,11 @@ class Root extends Component {
   }
 
   addDeployment = (location) => {
-    this.setState({ currentDeployment: { location , people: [...this.props.people], equipment: [...this.props.equipment]}, editorPanelOpen: true });
+    this.loadClimate(location, this.props.authenticated);
+    this.setState({ currentDeployment: { location, people: [...this.props.people], equipment: [...this.props.equipment] }, editorPanelOpen: true });
   }
 
   componentDidMount() {
-    // this.props.loadUnits();
-    // this.props.loadPeople();
-    // this.props.loadEquipment();
-    // this.props.loadLocation();
     this.props.loadOPtempo();
   }
 
@@ -163,10 +212,17 @@ class Root extends Component {
                   onChangeEndDate={this.onChange("endDate")}
                 />
                 <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Next </Button>
+                <Button onClick={() => {
+                  this.loadWeather(this.state.currentDeployment.location, this.state.currentDeployment.startDate, this.state.currentDeployment.endDate, this.props.authenticated);
+                  this.props.nextStep()
+                }}> Next </Button>
               </React.Fragment>
               <React.Fragment>
-                NOAA Weather Report
+                {this.state.climate.ClimateHumidity} <br/>
+                {this.state.climate.ClimateTemp}<br />
+                {this.state.weather.AvgTemp} Degrees <br/>
+                {this.state.weather.AvgHumidity} % Humidity<br/>
+                {this.state.weather.Precipitation} Precipitation<br />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
