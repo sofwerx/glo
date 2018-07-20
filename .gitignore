@@ -27,3 +27,7 @@ yarn-error.log*
 # Don't commit our environment variables
 .env
 /.vs
+
+# Ignore our raw docker-machine dmport json file
+.dm
+
