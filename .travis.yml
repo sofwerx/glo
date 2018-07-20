@@ -12,7 +12,7 @@ before_script:
 - rm -f .dm
 script:
 - export COMPOSE_PROJECT_NAME=swxvmhost
-- docker-compose build glo-services
+- docker-compose build glo
 - docker-compose up -d --force-recreate glo
 after_success:
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
