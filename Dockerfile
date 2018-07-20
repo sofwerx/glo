@@ -17,7 +17,8 @@ RUN apt-get -q update && apt-get install -y -qq \
   unzip \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN git clone https://github.com/sofwerx/glo.git
+COPY . /glo
+
 WORKDIR glo
 RUN npm install
 
