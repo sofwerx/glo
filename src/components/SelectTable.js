@@ -32,7 +32,7 @@ const styles = theme => ({
   },
 });
 
-function SelectTable({ classes, data = [], editableColumns = [], onChange = () => { } }) {
+function SelectTable({ classes, disabled=false, data = [], editableColumns = [], onChange = () => { } }) {
   if (data.length == 0) {
     return null;
   }
@@ -51,6 +51,7 @@ function SelectTable({ classes, data = [], editableColumns = [], onChange = () =
           <TableRow>
             <TableCell padding="checkbox">
               <Checkbox
+                disabled={disabled}
                 onChange={(ev) => data.map((_, i) => onChange(`[${i}].selected`)(ev.target.checked))}
                 checked={data.every(d => d.selected)}
               />
@@ -67,7 +68,8 @@ function SelectTable({ classes, data = [], editableColumns = [], onChange = () =
             return (
               <TableRow key={i}>
                 <TableCell padding="checkbox">
-                  <Checkbox
+                  <Checkbox 
+                    disabled={disabled}
                     onChange={(ev) => onChange(`[${i}].selected`)(ev.target.checked)}
                     checked={val.selected}
                   />
@@ -75,6 +77,7 @@ function SelectTable({ classes, data = [], editableColumns = [], onChange = () =
                 {headers.map(h => {
                   return (
                     <TableCell key={h}>{isEditable[[h]] ? <TextField
+                      disabled={disabled}
                       id="number"
                       label="Number"
                       value={val[[h]]}

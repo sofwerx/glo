@@ -1,11 +1,11 @@
-Where should Climate and Weather report be displayed? 
+TODO List
 
-Is it pertinent when selecting equipment? (Assume yes)
+Create Deployments review menu
 
-Similar questions on Weather. 
+Create button to jump back into editing a deployment
 
-I assume both end points take AuthToken? 
+Fix deployment path rendering
 
-Any ETA on when we will have an endpoint with recommended food? 
+Fix date initializations for deployments
 
-Any other web services we are missing besides the above? 
+Fix deployment workflow reinitialization

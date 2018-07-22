@@ -30,6 +30,7 @@ import {
   selectUnit,
 } from "../actions/operation";
 
+import OpTempos from '../data/OPtempo';
 import OPtempo from "../components/OPtempo";
 import LoginForm from "../components/LoginForm";
 import Picker from "../components/Picker";
@@ -39,14 +40,26 @@ import BottomNav from '../components/BottomNav';
 import Review from '../components/Review';
 import SelectTable from '../components/SelectTable';
 
+
 class Root extends Component {
   state = {
-    currentDeployment: {},
+    // Keeps track of which deployment you're looking at 
+    deploymentIdx: 0,
+    deployments: [
+      // Contains information on each deployment in the mission:
+      // People, Equipment, Location, Date Range, Supplies, Op Tempo
+      // As well as any other information that eventually needs to be stored here 
+    ],
+    // Stores UI state to determine if editor should be open or closed
     editorPanelOpen: false,
+    // Holds the unit that is currently being sent on missions
     unit: null,
+    // Stores UI state to determine if notifications pane should be open
     notifsOpen: false,
+    // Store some local information we need for the UI 
     climate: {},
-    weather: {}
+    weather: {},
+    supplies: {}
   };
 
   loadSupplies = async (deployment, authToken) => {
@@ -65,7 +78,7 @@ class Root extends Component {
       let { requestOK, ItemsRequested } = data;
       if (requestOK) {
         console.log(ItemsRequested);
-        
+
       }
     } catch (err) {
     }
@@ -131,13 +144,15 @@ class Root extends Component {
   }
 
   onSave = () => {
-    this.props.updateDeployment(this.state.currentDeployment);
+    this.setState({ editorPanelOpen: false });
+    // this.props.updateDeployment(this.state.currentDeployment);
   };
 
   onChange = key => val => {
-    const newState = { ...this.state };
-    newState.currentDeployment[key] = val;
-    _.set(newState, `currentDeployment.${key}`, val);
+    const deployment = this.state.deployments[this.state.deploymentIdx];
+    _.set(deployment, key, val);
+    let newState = {...this.state};
+    newState.deployments[this.state.deploymentIdx] = deployment;
     this.setState(newState);
   };
 
@@ -150,12 +165,22 @@ class Root extends Component {
   }
 
   addDeployment = (location) => {
-    this.loadClimate(location, this.props.authenticated);
-    this.setState({ currentDeployment: { location, people: [...this.props.people], equipment: [...this.props.equipment] }, editorPanelOpen: true });
-  }
-
-  componentDidMount() {
-    this.props.loadOPtempo();
+    const [lon, lat] = location;
+    this.loadClimate({ lat, lon }, this.props.authenticated);
+    const newDeployment = {
+      location: { lat, lon },
+      people: [...this.props.people].map(p => ({selected: true, ...p})),
+      equipment: [...this.props.equipment].map(e => ({ selected: true, ...e })),
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
+      supplies: [],
+      opTempo: 'Defend'
+    };
+    this.setState({
+      editorPanelOpen: true,
+      deployments: [...this.state.deployments, newDeployment],
+      deploymentIdx: this.state.deployments.length
+    });
   }
 
   openEditorPanel = () => {
@@ -166,10 +191,11 @@ class Root extends Component {
   }
 
   render() {
+    const deployment = this.state.deployments[this.state.deploymentIdx] || {};
     return (
       <div>
         <div>
-          <Globe deployments={this.props.deployments} onClick={this.addDeployment} />
+          <Globe deployments={this.state.deployments} onClick={this.addDeployment} />
         </div>
         <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout} />
         <Modal open={!this.props.authenticated}>
@@ -202,7 +228,7 @@ class Root extends Component {
           <div style={{ width: '40em' }}>
 
             <SwipeableViews axis={"x"} index={this.props.step}>
-              <React.Fragment>
+              {/* <React.Fragment>
                 <ul>
                   {this.props.deployments.map((d, i) => (
                     <li key={i}>
@@ -213,14 +239,14 @@ class Root extends Component {
                   ))}
                 </ul>
                 <Button onClick={this.props.addDeployment}>Add Deployment</Button>
-              </React.Fragment>
+              </React.Fragment> */}
               <React.Fragment>
-                <SelectTable data={this.state.currentDeployment.people} editableColumns={['qty']} onChange={this.onChangeIndex('people')} />
+                <SelectTable data={deployment.people} editableColumns={['qty']} onChange={this.onChangeIndex('people')} />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
               <React.Fragment>
-                <SelectTable data={this.state.currentDeployment.equipment} editableColumns={['qty-onhand']} onChange={this.onChangeIndex('equipment')} />
+                <SelectTable data={deployment.equipment} editableColumns={['qty-onhand']} onChange={this.onChangeIndex('equipment')} />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
@@ -231,7 +257,7 @@ class Root extends Component {
                 />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={() => {
-                  this.loadWeather(this.state.currentDeployment.location, this.state.currentDeployment.startDate, this.state.currentDeployment.endDate, this.props.authenticated);
+                  this.loadWeather(deployment.location, deployment.startDate, deployment.endDate, this.props.authenticated);
                   this.props.nextStep()
                 }}> Next </Button>
               </React.Fragment>
@@ -245,17 +271,20 @@ class Root extends Component {
                 <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
               <React.Fragment>
+                {/* TODO: This needs to reflect existing value... */}
                 <Picker
                   name="OP Tempo"
-                  values={this.props.OPtempo}
-                  onChange={this.onChange("OPtempo")}
+                  values={OpTempos}
+                  onChange={this.onChange("opTempo")}
+                  value={deployment.opTempo}
                 />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Review </Button>
               </React.Fragment>
+              
               <React.Fragment>
                 <Typography>Review</Typography>
-                <Review {...this.state.currentDeployment} />
+                <Review {...deployment} />
                 <Button onClick={this.onSave}> Save Deployment </Button>
               </React.Fragment>
             </SwipeableViews>

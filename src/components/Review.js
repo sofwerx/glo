@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
+
+import SelectTable from './SelectTable';
 
 export default class Review extends React.Component {
     
@@ -11,11 +13,11 @@ export default class Review extends React.Component {
 
             return (
                 <div>
-                    Location: {location[1]}, {location[0]}
+                    Location: {location.lat}, {location.lon}
                     <br/>
-                    People: {people.join(', ')}
+                    <SelectTable data={people.filter(p => p.selected)} disabled={true}/>
                     <br />
-                    Equipment: {equipment.join(', ')}
+                    <SelectTable data={equipment.filter(p => p.selected)} disabled={true} />
                     <br />
                     StartDate: {startDate}
                     <br />
