@@ -4,6 +4,9 @@ Webservices up on glo-services.vmhost.devwerx.org
 /ForceMgmtService/GetUnitTOE
 /WeatherService/GetClimate
 /WeatherService/GetWeatherRpt 
+/PlanFactorService/GetMissionDetails
+/PlanFactorService/ApprovalService
+/SupplyService
 
 
 

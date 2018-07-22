@@ -49,6 +49,28 @@ class Root extends Component {
     weather: {}
   };
 
+  loadSupplies = async (deployment, authToken) => {
+    try {
+      const options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({ AuthToken: authToken, deployment }),
+
+      };
+      const response = await fetch('/SupplyService', options);
+      const data = await response.json();
+      let { requestOK, ItemsRequested } = data;
+      if (requestOK) {
+        console.log(ItemsRequested);
+        
+      }
+    } catch (err) {
+    }
+  }
+
   loadClimate = async (location, authToken) => {
     try {
       const options = {
@@ -135,10 +157,6 @@ class Root extends Component {
   componentDidMount() {
     this.props.loadOPtempo();
   }
-
-  // componentWillReceiveProps(nextProps) {
-
-  // }
 
   openEditorPanel = () => {
     this.setState({ editorPanelOpen: true });
