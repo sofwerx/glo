@@ -43,9 +43,10 @@ export default class Globe extends Component {
     // ];
     const locations = [
       [-82.50621705971729, 28.010091178382265],
-      ...this.props.deployments.map(d => ([d.location.lat, d.location.lon]))
+      ...this.props.deployments.map(d => ([d.location.lon, d.location.lat]))
     ].reduce((acc, val, idx, all) => acc.concat([{ from: val, to: all[idx + 1] }]), []).slice(0, -1);
-
+    console.log(locations);
+    
     const deploymentLayer = new ArcLayer(
       {
         id: 'layer1',

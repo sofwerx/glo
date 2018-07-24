@@ -5,16 +5,18 @@ const defaultState = {
   unit: null
 };
 
-export default function(state = defaultState, action) {
+export default function (state = defaultState, action) {
   switch (action.type) {
     case "LOGIN":
-      return {...defaultState}
-    case "LOGOUT":      
-      return {step: 0, currentDeploymentIndex: -1, deployments: [] , unit: null};
+      return { ...defaultState }
+    case "LOGOUT":
+      return { step: 0, currentDeploymentIndex: -1, deployments: [], unit: null };
     case "SELECT_UNIT":
       return { ...state, unit: action.data };
     case "NEXT_STEP":
       return { ...state, step: state.step + 1 };
+    case "RESET_EDITOR":
+      return { ...state, step: 0 };
     case "PREVIOUS_STEP":
       return { ...state, step: state.step - 1 };
     case "SELECT_DEPLOYMENT":

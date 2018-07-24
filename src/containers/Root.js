@@ -21,7 +21,7 @@ import { loadUnits } from "../actions/units";
 import { loadPeople } from "../actions/people";
 import { loadEquipment } from "../actions/equipment";
 import { loadLocation } from "../actions/location";
-import { nextStep } from "../actions/operation";
+import { nextStep, resetEditor } from "../actions/operation";
 import {
   previousStep,
   addDeployment,
@@ -39,6 +39,7 @@ import Globe from '../components/Globe';
 import BottomNav from '../components/BottomNav';
 import Review from '../components/Review';
 import SelectTable from '../components/SelectTable';
+import DeploymentList from '../components/DeploymentsList';
 
 
 class Root extends Component {
@@ -50,6 +51,8 @@ class Root extends Component {
       // People, Equipment, Location, Date Range, Supplies, Op Tempo
       // As well as any other information that eventually needs to be stored here 
     ],
+    // UI State to determine if review panel should be open
+    deploymentReviewOpen: false,
     // Stores UI state to determine if editor should be open or closed
     editorPanelOpen: false,
     // Holds the unit that is currently being sent on missions
@@ -99,14 +102,6 @@ class Root extends Component {
       const { ClimateTemp, ClimateHumidity } = await response.json();
       const climate = { ClimateTemp, ClimateHumidity };
       this.setState({ climate })
-
-
-
-      // const responseEquipment = await fetch('/ForceMgmtService/GetUnitTOE', options);
-      // const dataEquipment = await responseEquipment.json();
-      // if (dataEquipment.requestOK) {
-      //     dispatch({ type: 'EQUIPMENT_LOADED', data: dataEquipment.EqipList });
-      // }
     } catch (err) {
     }
   }
@@ -151,7 +146,7 @@ class Root extends Component {
   onChange = key => val => {
     const deployment = this.state.deployments[this.state.deploymentIdx];
     _.set(deployment, key, val);
-    let newState = {...this.state};
+    let newState = { ...this.state };
     newState.deployments[this.state.deploymentIdx] = deployment;
     this.setState(newState);
   };
@@ -169,13 +164,14 @@ class Root extends Component {
     this.loadClimate({ lat, lon }, this.props.authenticated);
     const newDeployment = {
       location: { lat, lon },
-      people: [...this.props.people].map(p => ({selected: true, ...p})),
+      people: [...this.props.people].map(p => ({ selected: true, ...p })),
       equipment: [...this.props.equipment].map(e => ({ selected: true, ...e })),
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
       supplies: [],
       opTempo: 'Defend'
     };
+    this.props.resetEditor();
     this.setState({
       editorPanelOpen: true,
       deployments: [...this.state.deployments, newDeployment],
@@ -183,12 +179,19 @@ class Root extends Component {
     });
   }
 
-  openEditorPanel = () => {
-    this.setState({ editorPanelOpen: true });
+  editDeployment = (idx) => () => {
+    this.props.resetEditor();
+    this.setState({deploymentIdx: idx,  editorPanelOpen: true});
+  } 
+
+  openDeployments = () => {
+    this.setState({ deploymentReviewOpen: true });
   }
-  closeEditorPanel = () => {
-    this.setState({ editorPanelOpen: false });
+  closeDeployments = () => {
+    this.setState({ deploymentReviewOpen: false });
   }
+
+  
 
   render() {
     const deployment = this.state.deployments[this.state.deploymentIdx] || {};
@@ -197,7 +200,7 @@ class Root extends Component {
         <div>
           <Globe deployments={this.state.deployments} onClick={this.addDeployment} />
         </div>
-        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout} />
+        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout} openDeployments={this.openDeployments} />
         <Modal open={!this.props.authenticated}>
           <LoginForm
             loggedIn={this.props.authenticated}
@@ -214,6 +217,12 @@ class Root extends Component {
               onChange={this.selectUnit}
             />
             <Button onClick={() => this.props.selectUnit(this.state.unit, this.props.authToken)}> Confirm </Button>
+          </Paper>
+        </Modal>
+
+        <Modal open={this.state.deploymentReviewOpen} onClose={this.closeDeployments}>
+          <Paper>
+            <DeploymentList deployments={this.state.deployments} editDeployment={this.editDeployment}/>
           </Paper>
         </Modal>
 
@@ -262,10 +271,10 @@ class Root extends Component {
                 }}> Next </Button>
               </React.Fragment>
               <React.Fragment>
-                {this.state.climate.ClimateHumidity} <br/>
+                {this.state.climate.ClimateHumidity} <br />
                 {this.state.climate.ClimateTemp}<br />
-                {this.state.weather.AvgTemp} Degrees <br/>
-                {this.state.weather.AvgHumidity} % Humidity<br/>
+                {this.state.weather.AvgTemp} Degrees <br />
+                {this.state.weather.AvgHumidity} % Humidity<br />
                 {this.state.weather.Precipitation} Precipitation<br />
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Next </Button>
@@ -281,7 +290,7 @@ class Root extends Component {
                 <Button onClick={this.props.previousStep}> Previous </Button>
                 <Button onClick={this.props.nextStep}> Review </Button>
               </React.Fragment>
-              
+
               <React.Fragment>
                 <Typography>Review</Typography>
                 <Review {...deployment} />
@@ -312,7 +321,8 @@ function mapDispatchToProps(dispatch) {
       addDeployment,
       updateDeployment,
       selectDeployment,
-      loadOPtempo
+      loadOPtempo,
+      resetEditor
     },
     dispatch
   );

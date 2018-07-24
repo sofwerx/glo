@@ -18,6 +18,12 @@ export function addDeployment(location) {
     }
 }
 
+export function resetEditor() {
+    return {
+        type: 'RESET_EDITOR'
+    }
+}
+
 export function updateDeployment(data) {
     return {
         type: 'UPDATE_DEPLOYMENT',
