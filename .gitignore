@@ -29,5 +29,5 @@ yarn-error.log*
 /.vs
 
 # Ignore our raw docker-machine dmport json file
-.dm
+.dmport
 
