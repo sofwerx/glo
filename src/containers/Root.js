@@ -65,6 +65,7 @@ class Root extends Component {
     supplies: {}
   };
 
+  // TODO supplies need to be stored on the deployment.
   loadSupplies = async (deployment, authToken) => {
     try {
       const options = {
@@ -80,7 +81,11 @@ class Root extends Component {
       const data = await response.json();
       let { requestOK, ItemsRequested } = data;
       if (requestOK) {
-        console.log(ItemsRequested);
+        const deployment = this.state.deployments[this.state.deploymentIdx];
+        deployment.supplies = ItemsRequested.map(p => ({ selected: true, ...p }));
+        let newState = { ...this.state };
+        newState.deployments[this.state.deploymentIdx] = deployment;
+        this.setState(newState);
 
       }
     } catch (err) {
@@ -191,6 +196,10 @@ class Root extends Component {
     this.setState({ deploymentReviewOpen: false });
   }
 
+  logout = () => {
+    this.props.logout();
+    this.setState({deployments: []});
+  }
   
 
   render() {
@@ -200,7 +209,7 @@ class Root extends Component {
         <div>
           <Globe deployments={this.state.deployments} onClick={this.addDeployment} />
         </div>
-        <BottomNav openNotifs={this.openNotifs} signOut={this.props.logout} openDeployments={this.openDeployments} />
+        <BottomNav openNotifs={this.openNotifs} signOut={this.logout} openDeployments={this.openDeployments} />
         <Modal open={!this.props.authenticated}>
           <LoginForm
             loggedIn={this.props.authenticated}
@@ -288,9 +297,13 @@ class Root extends Component {
                   value={deployment.opTempo}
                 />
                 <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Review </Button>
+                <Button onClick={() => {this.props.nextStep(); this.loadSupplies(deployment, this.props.authenticated)} }> Suggested Rations </Button>
               </React.Fragment>
-
+              <React.Fragment>
+                <SelectTable data={deployment.supplies} editableColumns={['qty']} onChange={this.onChangeIndex('supplies')} />
+                <Button onClick={this.props.previousStep}> Previous </Button>
+                <Button onClick={this.props.nextStep}> Preview </Button>
+              </React.Fragment>
               <React.Fragment>
                 <Typography>Review</Typography>
                 <Review {...deployment} />
