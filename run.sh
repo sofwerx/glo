@@ -1,7 +1,6 @@
 #!/bin/bash
 export PATH=./node_modules/.bin:$PATH
 # install web dependencies
-npm run build
+yarn run build
 # run it!
-npm start
-
+#npm start

@@ -3,6 +3,9 @@ FROM node:latest
 # expose port for MAGE Server
 EXPOSE 3000
 
+ARG NODE_ENV=test
+ENV NODE_ENV=$NODE_ENV
+
 # install basics
 RUN apt-get -q update && apt-get install -y -qq \
   apt-utils \
@@ -20,7 +23,14 @@ RUN apt-get -q update && apt-get install -y -qq \
 COPY . /glo
 
 WORKDIR glo
-RUN npm install
+
+COPY package.json yarn.lock ./
+RUN set -ex; \
+  if [ "$NODE_ENV" = "production" ]; then \
+    yarn install --no-cache --frozen-lockfile --production; \
+  elif [ "$NODE_ENV" = "test" ]; then \
+    yarn install --no-cache --frozen-lockfile; \
+  fi;
 
 #RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
 #  && apt-get install -y -q nodejs \
