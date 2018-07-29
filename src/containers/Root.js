@@ -12,6 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import Drawer from '@material-ui/core/Drawer';
 import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+
 import _ from 'lodash';
 
 
@@ -40,6 +42,7 @@ import BottomNav from '../components/BottomNav';
 import Review from '../components/Review';
 import SelectTable from '../components/SelectTable';
 import DeploymentList from '../components/DeploymentsList';
+
 
 
 class Root extends Component {
@@ -184,10 +187,16 @@ class Root extends Component {
     });
   }
 
+  deleteDeployment = (idx) => () => {
+    const { deployments } = this.state;
+    const newDeployments = [...deployments.slice(0,idx), ...deployments.slice(idx+1)];
+    this.setState({deployments: newDeployments});
+  }
+
   editDeployment = (idx) => () => {
     this.props.resetEditor();
-    this.setState({deploymentIdx: idx,  editorPanelOpen: true});
-  } 
+    this.setState({ deploymentIdx: idx, editorPanelOpen: true });
+  }
 
   openDeployments = () => {
     this.setState({ deploymentReviewOpen: true });
@@ -198,19 +207,39 @@ class Root extends Component {
 
   logout = () => {
     this.props.logout();
-    this.setState({deployments: []});
+    this.setState({ deployments: [] });
   }
-  
+
 
   render() {
     const deployment = this.state.deployments[this.state.deploymentIdx] || {};
+    const modalStyle = {
+      position: 'absolute',
+      left: '30%',
+      width: '40%',
+      top: '30%',
+      borderRadius: '10px'
+    };
+
+    const nextButtonStyle = {
+      float: 'right'
+    };
+
+    const prevButtonStyle = {
+      float: 'left'
+    };
+    
     return (
       <div>
         <div>
+          <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={this.props.authenticated && this.props.unit !== null && !this.state.editorPanelOpen && !this.state.deploymentReviewOpen}
+            message={'Click on the map to add a deployment to that location'} 
+            />
           <Globe deployments={this.state.deployments} onClick={this.addDeployment} />
         </div>
         <BottomNav openNotifs={this.openNotifs} signOut={this.logout} openDeployments={this.openDeployments} />
-        <Modal open={!this.props.authenticated}>
+        <Modal style={modalStyle} open={!this.props.authenticated}>
           <LoginForm
             loggedIn={this.props.authenticated}
             onSubmit={this.props.login}
@@ -218,96 +247,93 @@ class Root extends Component {
           />
         </Modal>
 
-        <Modal open={this.props.authenticated && this.props.unit === null}>
+        <Modal style={modalStyle} open={this.props.authenticated && this.props.unit === null}>
           <Paper>
             <Picker
               values={this.props.units}
               name="Units"
               onChange={this.selectUnit}
+              value={this.state.unit}
             />
             <Button onClick={() => this.props.selectUnit(this.state.unit, this.props.authToken)}> Confirm </Button>
           </Paper>
         </Modal>
 
-        <Modal open={this.state.deploymentReviewOpen} onClose={this.closeDeployments}>
+        <Drawer anchor='bottom'  open={this.state.deploymentReviewOpen} onClose={this.closeDeployments}>
           <Paper>
-            <DeploymentList deployments={this.state.deployments} editDeployment={this.editDeployment}/>
+            <DeploymentList deployments={this.state.deployments} editDeployment={this.editDeployment} deleteDeployment={this.deleteDeployment}/>
           </Paper>
-        </Modal>
-
-        <Drawer anchor='right' open={this.state.notifsOpen} onClose={this.closeNotifs}>
-          <div style={{ width: '40em' }}>
-            <Typography>Notifications</Typography>
-          </div>
-
         </Drawer>
 
+        <Modal style={modalStyle} open={this.state.notifsOpen} onClose={this.closeNotifs}>
+          <Paper style={{ padding: '16px', width: '40em' }}>
+            <Typography variant='title'>Notifications</Typography>
+          </Paper>
+
+        </Modal>
+
         <Drawer open={this.state.editorPanelOpen} onClose={this.closeEditorPanel}>
-          <div style={{ width: '40em' }}>
+          <div style={{ width: '40em', padding: '16px' }}>
 
             <SwipeableViews axis={"x"} index={this.props.step}>
-              {/* <React.Fragment>
-                <ul>
-                  {this.props.deployments.map((d, i) => (
-                    <li key={i}>
-                      <Button onClick={() => this.props.selectDeployment(i)}>
-                        {d.location || `Location ${i}`}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-                <Button onClick={this.props.addDeployment}>Add Deployment</Button>
-              </React.Fragment> */}
               <React.Fragment>
+                <Button style={nextButtonStyle} style={nextButtonStyle} color='primary' variant='contained' onClick={this.props.nextStep}> Next </Button>
+                <Typography align='center' variant='title'>Select Personnel</Typography>
                 <SelectTable data={deployment.people} editableColumns={['qty']} onChange={this.onChangeIndex('people')} />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
               <React.Fragment>
+                <Button style={prevButtonStyle} color='primary' variant='contained' onClick={this.props.previousStep}> Previous </Button>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={this.props.nextStep}> Next </Button>
+                <Typography align='center' variant='title'>Select Equipment</Typography>
                 <SelectTable data={deployment.equipment} editableColumns={['qty-onhand']} onChange={this.onChangeIndex('equipment')} />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Next </Button>
               </React.Fragment>
               <React.Fragment>
-                <DateRange
-                  onChangeStartDate={this.onChange("startDate")}
-                  onChangeEndDate={this.onChange("endDate")}
-                />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={() => {
+                <Button style={prevButtonStyle} color='primary' variant='contained' onClick={this.props.previousStep}> Previous </Button>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={() => {
                   this.loadWeather(deployment.location, deployment.startDate, deployment.endDate, this.props.authenticated);
                   this.props.nextStep()
                 }}> Next </Button>
+                <Typography align='center' variant='title'>Date of Deployment</Typography>
+                <DateRange
+                  startDate={deployment.startDate}
+                  endDate={deployment.endDate}
+                  onChangeStartDate={this.onChange("startDate")}
+                  onChangeEndDate={this.onChange("endDate")}
+                />
               </React.Fragment>
               <React.Fragment>
-                {this.state.climate.ClimateHumidity} <br />
-                {this.state.climate.ClimateTemp}<br />
-                {this.state.weather.AvgTemp} Degrees <br />
-                {this.state.weather.AvgHumidity} % Humidity<br />
-                {this.state.weather.Precipitation} Precipitation<br />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Next </Button>
+                <Button style={prevButtonStyle} color='primary' variant='contained' onClick={this.props.previousStep}> Previous </Button>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={this.props.nextStep}> Next </Button>
+                <Typography align='center' variant='title'>Weather/Climate Report</Typography>
+                <br/>
+                <Typography variant='subheading'> Climate: {this.state.climate.ClimateHumidity} </Typography>  <br />
+                <Typography variant='subheading'> Weather: {this.state.climate.ClimateTemp} </Typography>  <br />
+                <Typography variant='subheading'> Average Temp: {this.state.weather.AvgTemp} c</Typography>  <br />
+                <Typography variant='subheading'> Expected Humidity: {this.state.weather.AvgHumidity}%</Typography>  <br />
+                <Typography variant='subheading'> Average Precipitation: {this.state.weather.Precipitation} "</Typography>  <br />
               </React.Fragment>
               <React.Fragment>
+                <Button style={prevButtonStyle} color='primary' variant='contained' onClick={this.props.previousStep}> Previous </Button>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={() => { this.props.nextStep(); this.loadSupplies(deployment, this.props.authenticated) }}> Suggested Rations </Button>
                 {/* TODO: This needs to reflect existing value... */}
+                <Typography align='center' variant='title'>Select Operation Tempo</Typography>
                 <Picker
                   name="OP Tempo"
                   values={OpTempos}
                   onChange={this.onChange("opTempo")}
                   value={deployment.opTempo}
                 />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={() => {this.props.nextStep(); this.loadSupplies(deployment, this.props.authenticated)} }> Suggested Rations </Button>
               </React.Fragment>
               <React.Fragment>
+                <Button style={prevButtonStyle} color='primary' variant='contained' onClick={this.props.previousStep}> Previous </Button>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={this.props.nextStep}> Preview </Button>
+                <Typography align='center' variant='title'>Select Rations</Typography>
                 <SelectTable data={deployment.supplies} editableColumns={['qty']} onChange={this.onChangeIndex('supplies')} />
-                <Button onClick={this.props.previousStep}> Previous </Button>
-                <Button onClick={this.props.nextStep}> Preview </Button>
               </React.Fragment>
               <React.Fragment>
-                <Typography>Review</Typography>
+                <Button style={nextButtonStyle} color='primary' variant='contained' onClick={this.onSave}> Save Deployment </Button>
+                <Typography align='center' variant='title'>Review Deployment</Typography>
                 <Review {...deployment} />
-                <Button onClick={this.onSave}> Save Deployment </Button>
               </React.Fragment>
             </SwipeableViews>
           </div>
@@ -316,8 +342,6 @@ class Root extends Component {
     );
   }
 }
-
-const onSubmit = ({ formData }) => console.log("Data submitted: ", formData);
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(

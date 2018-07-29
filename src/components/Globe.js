@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import DeckGL, { ArcLayer } from 'deck.gl';
+import DeckGL, { LineLayer } from 'deck.gl';
 import ReactMapGL from 'react-map-gl';
-
-import './Globe.css';
 
 const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
@@ -47,14 +45,14 @@ export default class Globe extends Component {
     ].reduce((acc, val, idx, all) => acc.concat([{ from: val, to: all[idx + 1] }]), []).slice(0, -1);
     console.log(locations);
     
-    const deploymentLayer = new ArcLayer(
+    const deploymentLayer = new LineLayer(
       {
         id: 'layer1',
         data: locations,
         getSourcePosition: d => d.from,
         getTargetPosition: d => d.to,
-        getColor: () => [255, 0, 0],
-        getStrokeWidth: 12
+        getColor: () => [39, 89, 183],
+        getStrokeWidth: 10
       }
     )
     return (

@@ -15,18 +15,18 @@ export default class Review extends React.Component {
             return (
                 <div>
                     Location: {location.lat}, {location.lon}
-                    <br/>
-                    <SelectTable data={people.filter(p => p.selected)} disabled={true}/>
-                    <br />
-                    <SelectTable data={equipment.filter(p => p.selected)} disabled={true} />
-                    <br/>
-                    <SelectTable data={supplies.filter(p => p.selected)} disabled={true} />
                     <br />
                     OpTempo: {opTempo}
                     <br />
                     StartDate: {startDate}
                     <br />
                     EndDate: {endDate}
+                    <br/>
+                    <SelectTable data={people.filter(p => p.selected)} disabled={true}/>
+                    <br />
+                    <SelectTable data={equipment.filter(p => p.selected)} disabled={true} />
+                    <br/>
+                    <SelectTable data={supplies.filter(p => p.selected)} disabled={true} />                   
                 </div>
         );
     }

@@ -25,13 +25,13 @@ class Picker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.value || props.multiple ? [] : ""
+      value: props.value
     };
   }
 
-  // componentWillReceiveProps(newProps) {
-  //   this.setState({ value: newProps.value || newProps.multiple ? [] : ""})
-  // }
+  componentWillReceiveProps(newProps) {
+    this.setState({ value: newProps.value })
+  }
 
   changeValue = ev => {
     if (this.props.onChange) {
