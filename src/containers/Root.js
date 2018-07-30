@@ -19,9 +19,9 @@ import _ from 'lodash';
 
 import { loadOPtempo } from "../actions/OPtempo";
 import { login, logout } from "../actions/authentication";
-import { loadUnits } from "../actions/units";
+
 import { loadPeople } from "../actions/people";
-import { loadEquipment } from "../actions/equipment";
+
 import { loadLocation } from "../actions/location";
 import { nextStep, resetEditor } from "../actions/operation";
 import {
@@ -348,8 +348,6 @@ function mapDispatchToProps(dispatch) {
     {
       login,
       logout,
-      loadUnits,
-      loadEquipment,
       loadPeople,
       loadLocation,
       nextStep,
