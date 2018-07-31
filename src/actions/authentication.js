@@ -1,38 +1,29 @@
 import fetch from "isomorphic-fetch";
 
-function submitActionCreator(url) {
-  return (body, onSuccess, onError) => async dispatch => {
+export function login({ formData }) {
+  return async dispatch => {
     try {
       const options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
         method: "POST",
-        body: JSON.stringify(body)
-      };
-      const response = await fetch(url, options);
-      const data = await response.json();
-      onSuccess(data);
-    } catch (err) {
-      onError();
-    }
-  };
-}
+        body: JSON.stringify({ id: formData.username, pass: formData.password }),
 
-export function login({ formData }) {
-  return {
-    type: "LOGIN",
-    data: formData
-  };
-  return submitActionCreator("/auth")(
-    formData,
-    () => {
-      return {
-        type: "LOGIN",
-        data: formData
       };
-    },
-    () => {
-      return { type: "INVALID_LOGIN" };
+      const response = await fetch('/AuthService', options);
+      const data = await response.json();
+      const { authenticated, AuthToken, units} = data;
+      if(authenticated) {
+        dispatch( { type: 'LOGIN', data: AuthToken });
+        dispatch({ type: 'UNITS_LOADED', data: units });
+      }
+       // onSuccess(data);
+    } catch (err) {
+      // onError();
     }
-  );
+  }
 }
 
 export function logout() {

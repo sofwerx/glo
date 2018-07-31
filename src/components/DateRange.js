@@ -32,6 +32,10 @@ class DateRange extends Component {
     endDate: ''
   };
 
+  componentWillReceiveProps(newProps) {
+    this.setState({ startDate: newProps.startDate, endDate: newProps.endDate });
+  }
+
   changeDate = path => ev => {
     const newState = { ...this.state };
     newState[path] = ev.target.value;
