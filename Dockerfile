@@ -1,9 +1,9 @@
-FROM node:latest
+FROM node:8.9.4
 
 # expose port for MAGE Server
 EXPOSE 3000
 
-ARG NODE_ENV=test
+ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
 # install basics
@@ -25,12 +25,14 @@ COPY . /glo
 WORKDIR glo
 
 COPY package.json yarn.lock ./
-RUN set -ex; \
-  if [ "$NODE_ENV" = "production" ]; then \
-    yarn install --no-cache --frozen-lockfile --production; \
-  elif [ "$NODE_ENV" = "test" ]; then \
-    yarn install --no-cache --frozen-lockfile; \
-  fi;
+RUN yarn --pure-lockfile
+
+#RUN set -ex; \
+#  if [ "$NODE_ENV" = "production" ]; then \
+#    yarn install --no-cache --frozen-lockfile --production; \
+#  elif [ "$NODE_ENV" = "test" ]; then \
+#    yarn install --no-cache --frozen-lockfile; \
+#  fi;
 
 #RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
 #  && apt-get install -y -q nodejs \
@@ -42,9 +44,12 @@ RUN set -ex; \
 #
 #RUN npm install -g forever
 
+# install web dependencies
+yarn run build
 
 # run it!
 #CMD npm start
 
+#run it using run.sh
 ADD run.sh /glo/run.sh
 CMD /glo/run.sh
