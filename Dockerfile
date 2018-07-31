@@ -40,12 +40,12 @@ RUN yarn --pure-lockfile
 #  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # install web dependencies
-#RUN npm run build
+#RUN yarn run build
 #
 #RUN npm install -g forever
 
 # install web dependencies
-yarn run build
+RUN npm run build
 
 # run it!
 #CMD npm start
