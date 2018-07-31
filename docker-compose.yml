@@ -1,11 +1,37 @@
 version: "2.1"
+
+x-logging:
+  &default-logging
+  options:
+    max-size: '12m'
+    max-file: '5'
+  driver: json-file
+
+networks: 
+
+  default:
+    driver: bridge
+
 services:
 
   glo:
+    build: .
+    image: sofwerx/glo
     container_name: glo
     hostname: glo
-    build: .
-    image: glo
+    restart: always
     ports:
       - 3000:3000
+    networks:
+      - default
+    environment:
+      REACT_APP_MAPBOX_ACCESS_TOKEN: ${REACT_APP_MAPBOX_ACCESS_TOKEN}
+    logging: *default-logging
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=glo"
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=Host:glo.${DNS_DOMAIN}"
+      - "traefik.frontend.passHostHeader=false"
+      - "traefik.frontend.entryPoints=http,https"
 
