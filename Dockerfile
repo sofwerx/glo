@@ -45,7 +45,7 @@ RUN yarn --pure-lockfile
 #RUN npm install -g forever
 
 # install web dependencies
-yarn run build
+RUN yarn run build
 
 # run it!
 #CMD npm start
