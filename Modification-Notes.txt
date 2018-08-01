@@ -1,0 +1,28 @@
+Glo notes
+
+Login
+ - Add functionality for pressing the "Enter" key
+
+On Click
+ - Show current location as From (allow to change to last mission destination or new clicked location)
+ - Display location data(MGRS Format)
+ - Next button to confim
+ - Add cancel button
+
+Select Personnel
+ - Make Branch and Rank editable
+
+Select Equipment
+ - Add second quantity field (items being taken are different from OH)
+ - Reorganize fields 	LIN-TAMCN	QTY
+			NAME
+
+Destination
+ - Multi-Phase mission
+
+Date of Deployement
+ - Have "End Date" calender open on "Start Date"
+
+Select Rations
+ - list columns as rows per item
+
