@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import DeckGL, { LineLayer } from 'deck.gl';
 import ReactMapGL from 'react-map-gl';
-
 const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 export default class Globe extends Component {
@@ -11,9 +10,12 @@ export default class Globe extends Component {
       width: 100,
       longitude: -82.50621705971729,
       latitude: 28.010091178382265,
-      zoom: 1,
+      zoom: 2,
       pitch: 0,
       bearing: 0,
+      continuousWorld: false,
+      // This option disables loading tiles outside of the world bounds.
+      noWrap: true
     }
   }
 
@@ -44,7 +46,7 @@ export default class Globe extends Component {
       ...this.props.deployments.map(d => ([d.location.lon, d.location.lat]))
     ].reduce((acc, val, idx, all) => acc.concat([{ from: val, to: all[idx + 1] }]), []).slice(0, -1);
     console.log(locations);
-    
+
     const deploymentLayer = new LineLayer(
       {
         id: 'layer1',
@@ -53,8 +55,11 @@ export default class Globe extends Component {
         getTargetPosition: d => d.to,
         getColor: () => [39, 89, 183],
         getStrokeWidth: 10
+
       }
     )
+
+
     return (
       <div style={{ width: '100%', height: '80%' }}>
         <ReactMapGL
@@ -63,6 +68,9 @@ export default class Globe extends Component {
           onViewportChange={(viewport) => {
             this.setState({ viewport })
             // Optionally call `setState` and use the state to update the map.
+          }}
+          mapOptions={{
+            renderWorldCopies: false
           }}
           onClick={({ lngLat }) => {
             if (this.props.onClick) {
